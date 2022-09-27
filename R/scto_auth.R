@@ -1,3 +1,29 @@
+get_session_auth = function(servername, username, password) {
+  index_url = glue('https://{servername}.surveycto.com/index.html')
+  index_res = GET(index_url)
+  csrf_token = headers(index_res)$`x-csrf-token`
+
+  if (is.null(csrf_token)) {
+    scto_abort(paste(
+      'Unable to access server {.server `{servername}`}.',
+      'Please check that server is running.'))}
+
+  login_url = glue(
+    'https://{servername}.surveycto.com/login?spring-security-redirect=%2F')
+  login_res = POST(
+    login_url,
+    body = list(
+      username = username,
+      password = password,
+      csrf_token = csrf_token),
+    encode = 'form')
+
+  scto_cookies = cookies(login_res)
+  session_id = scto_cookies$value[scto_cookies$name == 'JSESSIONID']
+
+  return(list(csrf_token = csrf_token, session_id = session_id))}
+
+
 #' Get a SurveyCTO authentication session object
 #'
 #' Authenticates with SurveyCTO and fetches corresponding credentials.
@@ -22,7 +48,8 @@
 #' auth = scto_auth('my_server', 'my_user', 'my_pw', auth_file = NULL)
 #' }
 #'
-#' @seealso [scto_read()], [scto_get_attachments()], [scto_write()]
+#' @seealso [scto_read()], [scto_meta()], [scto_get_attachments()],
+#'   [scto_write()]
 #'
 #' @export
 scto_auth = function(
@@ -37,7 +64,9 @@ scto_auth = function(
     assert_file_exists(auth_file)
     auth_char = readLines(auth_file, warn = FALSE)
     if (!test_character(auth_char, any.missing = FALSE, len = 3L)) {
-      stop('auth_file must have exactly three lines: servername, username, and password.')}
+      scto_abort(paste(
+        '`auth_file` "{auth_file}" must have exactly three lines:',
+        'servername, username, and password.'))}
     servername = auth_char[1L]
     username = auth_char[2L]
     password = auth_char[3L]}
@@ -48,8 +77,12 @@ scto_auth = function(
     httpauth = 1,
     userpwd = glue('{username}:{password}'))
 
-  csrf_token = get_csrf_token(servername, username, password)
+  session_auth = get_session_auth(servername, username, password)
 
-  auth = list(servername = servername, handle = handle, csrf_token = csrf_token)
+  auth = list(servername = servername, handle = handle,
+              csrf_token = session_auth$csrf_token,
+              session_id = session_auth$session_id)
   class(auth) = 'scto_auth'
+
+  m = scto_meta(auth) # check for valid username and password
   return(auth)}
