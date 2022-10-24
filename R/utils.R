@@ -1,5 +1,5 @@
 #' @import checkmate
-#' @importFrom data.table data.table := set fread fwrite
+#' @importFrom data.table data.table := set fread fwrite rbindlist
 #' @importFrom glue glue
 #' @importFrom httr GET POST content add_headers headers cookies set_cookies
 NULL
@@ -81,4 +81,4 @@ drop_empties = function(d) {
   if (nrow(d) == 0) return(d)
   idx = sapply(d, is_empty)
   cols = colnames(d)[which(idx)]
-  d[, c(cols) := NULL][]}
+  d[, c(cols) := NULL]}
