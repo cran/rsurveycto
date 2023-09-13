@@ -35,15 +35,16 @@ scto_get_form_definitions = function(auth, form_ids = NULL, simplify = TRUE) {
     scto_abort(paste(
       'No form(s) with ID(s) `{.id {ids_bad}}` exist(s)',
       'on the server `{.server {auth$servername}}`.'))
+    ids_bad # for lintr
   }
 
   if (is.null(form_ids)) form_ids = ids
 
   # works even if no forms
-  r = lapply(form_ids, function(id) get_form_def(auth, id))
+  r = lapply(form_ids, \(id) get_form_def(auth, id))
   names(r) = form_ids
   if (length(r) == 1L && simplify) r = r[[1L]]
-  return(r)
+  r
 }
 
 
@@ -62,13 +63,12 @@ get_form_def = function(auth, id) {
   }
 
   d = jsonlite::fromJSON(content)
-  idx = which(sapply(d, function(x) inherits(x, 'matrix')))
+  idx = which(sapply(d, \(x) inherits(x, 'matrix')))
   for (i in idx) {
     cols = d[[i]][1, ]
     d[[i]] = data.table::as.data.table(d[[i]][-1, , drop = FALSE])
     data.table::setnames(d[[i]], cols)
   }
   names(d) = sub('RowsAndColumns$', '', names(d))
-
-  return(d)
+  d
 }

@@ -1,6 +1,6 @@
 #' Read data from a SurveyCTO server
 #'
-#' This function can read both datasets and forms.
+#' This function can read datasets and forms.
 #'
 #' @param auth [scto_auth()] object.
 #' @param ids Character vector indicating IDs of the datasets and/or forms.
@@ -71,11 +71,12 @@ scto_read = function(
     scto_abort(paste(
       'No form(s) or dataset(s) with ID(s) `{.id {ids_bad}}` exist(s)',
       'on the server `{.server {auth$servername}}`.'))
+    ids_bad # for lintr
   }
 
   catalog_now = if (is.null(ids)) catalog else catalog[catalog$id %in% ids]
 
-  r = lapply(seq_len(nrow(catalog_now)), function(i) {
+  r = lapply(seq_len(nrow(catalog_now)), \(i) {
     id = catalog_now$id[i]
     if (catalog_now$type[i] == 'form') {
       scto_read_form(
@@ -93,5 +94,5 @@ scto_read = function(
     names(r) = catalog_now$id
     r$.catalog = catalog # surveycto prohibits "." in IDs, so we're safe
   }
-  return(r)
+  r
 }
