@@ -17,12 +17,9 @@
 #' @examples
 #' \dontrun{
 #' auth = scto_auth('scto_auth.txt')
-#' scto_data = scto_read(auth, 'my_form', 'form')
-#' filenames = scto_get_attachments(auth, scto_data[['my_attachment']])
+#' form_data = scto_read(auth, 'my_form', 'form')
+#' filenames = scto_get_attachments(auth, form_data[['my_attachment']], '.')
 #' }
-#'
-#' @seealso [scto_auth()], [scto_read()], [scto_get_form_definitions()],
-#'   [scto_write()]
 #'
 #' @export
 scto_get_attachments = function(
@@ -61,7 +58,7 @@ scto_get_attachments = function(
   if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
   for (i in seq_along(urls)) {
-    scto_bullets(c(v = 'Downloading `{.filename {filenames[i]}}`.'))
+    scto_bullets(c(v = 'Downloading {.filename {filenames[i]}}.'))
     path = file.path(output_dir, filenames[i])
     if (is.null(private_key)) {
       res = curl::curl_download(urls[i], path, handle = auth$handle)

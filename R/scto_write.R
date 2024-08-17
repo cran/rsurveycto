@@ -1,16 +1,19 @@
 #' Write data to a SurveyCTO server
 #'
+#' @description
+#' `r lifecycle::badge('experimental')`
+#'
 #' This function updates an existing dataset using a web POST request, as
 #' uploading data is not officially supported by the SurveyCTO API.
 #'
 #' @param auth [scto_auth()] object.
 #' @param data `data.frame` to upload.
-#' @param dataset_id String indicating ID of existing dataset.
+#' @param dataset_id String indicating id of existing dataset.
 #' @param dataset_title String indicating title of dataset. Will replace the
 #'   existing title, regardless of `append`.
 #' @param append Logical indicating whether to append or replace the dataset.
 #' @param fill Logical indicating whether to implicitly fill missing columns
-#'   with `NA`s, i.e., whether to allow a mismatch between columns of the
+#'   with `NA`, i.e., whether to allow a mismatch between columns of the
 #'   existing dataset and columns of `data`. Only used if `append` is `TRUE`.
 #'
 #' @return A list with elements:
@@ -24,13 +27,10 @@
 #' r = scto_write(auth, data, 'my_dataset', 'My Dataset')
 #' }
 #'
-#' @seealso [scto_auth()], [scto_meta()], [scto_read()],
-#'   [scto_get_form_definitions()], [scto_get_attachments()]
-#'
 #' @export
 scto_write = function(
-    auth, data, dataset_id, dataset_title = dataset_id,
-    append = FALSE, fill = FALSE) {
+    auth, data, dataset_id, dataset_title = dataset_id, append = FALSE,
+    fill = FALSE) {
   assert_class(auth, 'scto_auth')
   assert_data_frame(data)
   assert_string(dataset_id)
@@ -40,9 +40,8 @@ scto_write = function(
   # check that dataset exists
   data_old = scto_read(auth, dataset_id, drop_empty_cols = FALSE)
   if (attr(data_old, 'scto_type') != 'dataset') {
-    scto_abort(paste(
-      'ID `{.id {dataset_id}}` on the server `{.server {auth$servername}}`',
-      'corresponds to a form, not a dataset.'))
+    scto_abort(
+      'The id {.id {dataset_id}} corresponds to a form, not a dataset.')
   }
 
   if (append) {
@@ -50,7 +49,7 @@ scto_write = function(
     if (!fill && !setequal(colnames(data), colnames(data_old))) {
       scto_abort(paste(
         'If `fill` is FALSE, column names of `data` must match',
-        'those of the dataset `{.dataset {dataset_id}}`.'))
+        'those of the dataset {.dataset {dataset_id}}.'))
     }
   }
 
@@ -69,7 +68,7 @@ scto_write = function(
     'datasets/{dataset_id}/upload?csrf_token={auth$csrf_token}')
 
   # data upload
-  scto_bullets(c(v = 'Writing dataset `{.dataset {dataset_id}}`.'))
+  scto_bullets(c(v = 'Writing dataset {.dataset {dataset_id}}.'))
 
   upload_res = POST(
     upload_url,

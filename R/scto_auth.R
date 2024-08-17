@@ -5,7 +5,7 @@ get_session_auth = function(servername, username, password) {
 
   if (is.null(csrf_token)) {
     scto_abort(paste(
-      'Unable to access server {.server `{servername}`}.',
+      'Unable to access server {.server {servername}}.',
       'Please check that server is running.'))
   }
 
@@ -52,9 +52,6 @@ get_session_auth = function(servername, username, password) {
 #' auth = scto_auth('my_server', 'my_user', 'my_pw', auth_file = NULL)
 #' }
 #'
-#' @seealso [scto_read()], [scto_meta()], [scto_get_form_definitions()],
-#'   [scto_get_attachments()], [scto_write()]
-#'
 #' @export
 scto_auth = function(
     auth_file = NULL, servername = NULL, username = NULL, password = NULL,
@@ -70,7 +67,7 @@ scto_auth = function(
     auth_char = readLines(auth_file, warn = FALSE)
     if (!test_character(auth_char, any.missing = FALSE, len = 3L)) {
       scto_abort(paste(
-        '`auth_file` "{auth_file}" must have exactly three lines:',
+        '`auth_file` {.filename {auth_file}} must have exactly three lines:',
         'servername, username, and password.'))
     }
     servername = auth_char[1L]

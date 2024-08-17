@@ -6,8 +6,7 @@
 #'
 #' @return `scto_meta()` returns a nested list of metadata related to forms,
 #'   datasets, groups, and publishing information. `scto_catalog()` returns a
-#'   `data.table` with columns `type` ("form" or "dataset"), `id`, `title`,
-#'   `version`, `group_id`, and `group_title`.
+#'   `data.table` with one row per form or dataset.
 #'
 #' @examples
 #' \dontrun{
@@ -15,9 +14,6 @@
 #' metadata = scto_meta(auth)
 #' catalog = scto_catalog(auth)
 #' }
-#'
-#' @seealso [scto_auth()], [scto_read()], [scto_get_form_definitions()],
-#'   [scto_write()]
 #'
 #' @export
 scto_meta = function(auth) {
@@ -30,12 +26,12 @@ scto_meta = function(auth) {
 
   if (res$status_code != 200L) {
     scto_abort(
-      'Invalid username or password for server `{.server {auth$servername}}`.')
+      'Invalid username or password for server {.server {auth$servername}}.')
   }
 
   scto_bullets(
-    c(v = 'Reading metadata for server `{.server {auth$servername}}`.'))
-  m = content(res, as = 'parsed')
+    c(v = 'Reading metadata for server {.server {auth$servername}}.'))
+  m = content(res, 'parsed')
   m
 }
 
@@ -43,23 +39,59 @@ scto_meta = function(auth) {
 #' @rdname scto_meta
 #' @export
 scto_catalog = function(auth) {
+  # surveycto enforces uniqueness of ids across forms and datasets
+  created_at = creationDate = last_incoming_data_at = # nolint
+    lastIncomingDataDate = form_version = type = NULL # nolint
   m = scto_meta(auth)
-  # surveycto enforces uniqueness of IDs across forms and datasets
-  types = c('datasets', 'forms')
-  func = \(x) x[c('id', 'title', 'version', 'groupId')]
-  d = cbind(
-    data.table(type = rep(
-      substr(types, 1, nchar(types) - 1), times = lengths(m[types]))),
-    rbindlist(
-      lapply(types, \(type) rbindlist(lapply(m[[type]], func)))))
-  # form versions come back as string, too big for int, so make numeric
-  set(d, j = 'version', value = as.numeric(d$version))
-  setnames(d, 'groupId', 'group_id')
+  common_cols = c('id', 'title', 'version', 'groupId')
 
-  group_cols = c('group_id', 'group_title')
+  if (length(m$datasets) > 0L) {
+    dataset_cols = c(common_cols, 'casesDataset', 'discriminator', 'rows')
+    datasets = rbindlist(
+      lapply(m$datasets, \(x) x[dataset_cols]), use.names = TRUE, fill = TRUE)
+    setnames(datasets, c('casesDataset', 'version', 'rows', 'groupId'),
+             c('is_cases_dataset', 'dataset_version', 'num_rows', 'group_id'))
+  } else {
+    datasets = data.table()
+  }
+
+  if (length(m$forms) > 0L) {
+    sub_idx = grepl('SubmissionCount$', names(m$forms[[1L]]))
+    sub_cols = names(m$forms[[1L]])[sub_idx]
+    form_cols = c(
+      common_cols, 'creationDate', 'lastIncomingDataDate', 'encrypted',
+      'deployed', 'reviewWorkflowEnabled', sub_cols)
+
+    forms = rbindlist(
+      lapply(m$forms, \(x) x[form_cols]), use.names = TRUE, fill = TRUE)
+    forms[, created_at := as.POSIXct(creationDate / 1000, tz = 'UTC')]
+    forms[, last_incoming_data_at := as.POSIXct(
+      lastIncomingDataDate / 1000, tz = 'UTC')]
+    forms[, `:=`(creationDate = NULL, lastIncomingDataDate = NULL)]
+
+    old = c(
+      'version', 'groupId', 'encrypted', 'deployed', 'reviewWorkflowEnabled',
+      sub_cols)
+    new = c(
+      'form_version', 'group_id', 'is_encrypted', 'is_deployed',
+      'is_review_workflow_enabled',
+      paste0('num_submissions_', gsub('SubmissionCount', '', sub_cols)))
+    setnames(forms, old, new)
+  } else {
+    forms = data.table()
+  }
+
+  d = rbind(forms, datasets, use.names = TRUE, fill = TRUE)
+  d[, type := fifelse(is.na(form_version), 'dataset', 'form')]
+
   g = rbindlist(lapply(m$groups, \(x) x[c('id', 'title')]))
-  setnames(g, group_cols)
-  d = merge(d, g, by = group_cols[1L], sort = FALSE)
-  data.table::setcolorder(d, 2:5)
-  data.table::setkey(d)
+  setnames(g, c('group_id', 'group_title'))
+  d = merge(d, g, by = 'group_id', sort = FALSE)
+  neworder = c(
+    'id', 'title', 'type', 'form_version', 'dataset_version', 'created_at',
+    'last_incoming_data_at', 'is_encrypted', 'is_deployed',
+    'is_review_workflow_enabled', 'is_cases_dataset', 'discriminator',
+    'group_id', 'group_title')
+  setcolorder(d, neworder)
+  setkey(d)
 }
