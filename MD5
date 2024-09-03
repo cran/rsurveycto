@@ -1,12 +1,12 @@
-c17481999883bfc556cc4aa8c6cfc43c *DESCRIPTION
+5369fcf8cf79cf855caddd1079be641f *DESCRIPTION
 9d1a36041a5efab88516b06238b39a0c *LICENSE
 3d87a0f2de237c327747b3e692b8cc15 *NAMESPACE
 6ebbb83649c3c948933f2c1c8086e77f *R/rsurveycto-package.R
 2cb96ce72b3cc40eb39c5edec04d5f85 *R/scto_auth.R
 7bed4ce062dffa702175e896c796b18d *R/scto_get_attachments.R
 ad4f4b12bba9becf2720a02b00a2d4ca *R/scto_get_form_definitions.R
-878c351a22e979a2072ece69286cccf8 *R/scto_get_form_metadata.R
-bdcc5c7460d75758777e03d3b1dcf4e4 *R/scto_meta.R
+2318638ad7fdd1c8ce2d3e5c322fcb82 *R/scto_get_form_metadata.R
+66440d35b866a6a5baba00e90c6ee3c9 *R/scto_meta.R
 27d0462c9b281e8081a19459d3bba10e *R/scto_read.R
 0b1f5843a7cd5447bd6680e666799a0e *R/scto_read_utils.R
 500e6fdc70fdc7f1a98b1e8d4583fb41 *R/scto_write.R
@@ -31,7 +31,7 @@ aa8745bd81947ed96646b64f868c21df *man/scto_quiet.Rd
 7b1e95dd31403db9ce21d3e982bdd7bb *tests/testthat/_snaps/scto-get-attachments/Amygdalus_persica2-1661381746331.jpg
 7cb8ac1bbfd710efea2b09b887549cf9 *tests/testthat/rsurveycto-private-key.pem
 926e1f57b2979c0637ba892f2c70c4f3 *tests/testthat/rsurveycto-private-key_public.pem
-1610822bae6eb670228d01546253e5f7 *tests/testthat/scto_auth.txt
+ca68d1d4a0ac6435d349677020c4237d *tests/testthat/scto_auth.txt
 a0510181fe19a1b86700555610007846 *tests/testthat/setup.R
 47abc4dd6024c1fb060d58aec117a558 *tests/testthat/test-scto-auth.R
 0fac76e81f8f9e898049d2c8bb0f84a7 *tests/testthat/test-scto-get-attachments.R
