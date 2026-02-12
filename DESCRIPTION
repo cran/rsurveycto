@@ -1,7 +1,7 @@
 Package: rsurveycto
 Type: Package
 Title: Interact with Data on 'SurveyCTO'
-Version: 0.2.4
+Version: 0.2.5
 Authors@R: c(
   person('Jake', 'Hughey', , 'jake@agency.fund', c('aut', 'cre')),
   person('Robert', 'On', , 'robert@agency.fund', 'aut'))
@@ -24,9 +24,9 @@ Imports: checkmate (>= 2.3.2), cli (>= 3.6.3), curl (>= 5.2.1),
 Suggests: knitr, rmarkdown, testthat (>= 3.2.1.1)
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-12-22 15:26:13 UTC; jakehughey
+Packaged: 2026-02-12 06:26:18 UTC; jakehughey
 Author: Jake Hughey [aut, cre],
   Robert On [aut]
 Maintainer: Jake Hughey <jake@agency.fund>
 Repository: CRAN
-Date/Publication: 2025-12-22 16:00:02 UTC
+Date/Publication: 2026-02-12 08:20:12 UTC
