@@ -1,13 +1,13 @@
-c414a328fe9cfee825b84fb0700ef537 *DESCRIPTION
+64d0c016ac65c6ffea419b46abc2a139 *DESCRIPTION
 9d1a36041a5efab88516b06238b39a0c *LICENSE
 a3806ad8ac068abca5d0856d2a3e868b *NAMESPACE
-ec07ee2750d7bbbc4e73d1f74f177590 *NEWS.md
+2df8610f1a12014ad01dc9b2975dabd7 *NEWS.md
 6ebbb83649c3c948933f2c1c8086e77f *R/rsurveycto-package.R
 2cb96ce72b3cc40eb39c5edec04d5f85 *R/scto_auth.R
 7bed4ce062dffa702175e896c796b18d *R/scto_get_attachments.R
 18520b378fdab17047399bea56ebbaa0 *R/scto_get_form_definitions.R
 07f58f7059ff743dcd9e63d350dfd3f8 *R/scto_get_form_metadata.R
-7e3951028ce47687b1dd5276f65bc5ce *R/scto_get_form_responses.R
+48a0461b7f96fa9b6548d4417933a18f *R/scto_get_form_responses.R
 34a6ef196a68bbb5def942968679d3af *R/scto_meta.R
 4572eea42c7b7fe77a0740cd260f4561 *R/scto_read.R
 0b1f5843a7cd5447bd6680e666799a0e *R/scto_read_utils.R
